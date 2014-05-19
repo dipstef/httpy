@@ -4,11 +4,11 @@ from collected.dict.caseless import CaseLessDict
 from dated import utc
 
 
-class Headers(CaseLessDict):
+class HttpHeaders(CaseLessDict):
 
     def __init__(self, seq=None, encoding='utf-8'):
         self.encoding = encoding
-        super(Headers, self).__init__(seq)
+        super(HttpHeaders, self).__init__(seq)
 
     def _normalize_key(self, key):
         if isinstance(key, unicode):
@@ -23,19 +23,19 @@ class Headers(CaseLessDict):
 
     def __getitem__(self, key):
         try:
-            return super(Headers, self).__getitem__(key)[-1]
+            return super(HttpHeaders, self).__getitem__(key)[-1]
         except IndexError:
             return None
 
     def get(self, key, def_val=None):
         try:
-            return super(Headers, self).get(key, def_val)[-1]
+            return super(HttpHeaders, self).get(key, def_val)[-1]
         except IndexError:
             return None
 
     def getlist(self, key, def_val=None):
         try:
-            return super(Headers, self).__getitem__(key)
+            return super(HttpHeaders, self).__getitem__(key)
         except KeyError:
             if def_val is not None:
                 return self.normalize_value(def_val)

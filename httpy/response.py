@@ -1,5 +1,5 @@
 from dated.normalized import utc
-from .headers import Headers
+from .headers import HttpHeaders
 from .headers import date_header
 
 
@@ -9,7 +9,7 @@ class ResponseStatus(object):
         self.request = request
         self.url = url
         self.status = status
-        self.headers = Headers(headers or {})
+        self.headers = HttpHeaders(headers or {})
         self.date = date or date_header(self.headers) or utc.now()
 
     def __repr__(self):
