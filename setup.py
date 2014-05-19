@@ -16,5 +16,5 @@ setup(name=name,
       packages=['httpy', 'httpy.headers'],
       platforms=['Any'],
       long_description=desc,
-      requires=['collected', 'connected']
+      requires=['collected']
 )
