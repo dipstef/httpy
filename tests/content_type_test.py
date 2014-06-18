@@ -1,4 +1,4 @@
-from httpy.headers.content_type import parse_content_type
+from httpy.http.headers.content_type import parse_content_type
 
 
 def main():

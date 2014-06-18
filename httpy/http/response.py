@@ -1,6 +1,6 @@
 from dated.normalized import utc
-from .headers import HttpHeaders
-from .headers import date_header
+
+from .headers import HttpHeaders, date_header
 
 
 class ResponseStatus(object):

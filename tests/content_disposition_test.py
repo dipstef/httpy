@@ -1,6 +1,7 @@
 # coding=utf-8
 from unicoder import encoded
-from httpy.headers.content import _disposition_file_name, _unquote_disposition_file
+
+from httpy.http.headers.content import _disposition_file_name, _unquote_disposition_file
 
 
 def main():
