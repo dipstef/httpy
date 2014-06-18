@@ -1,9 +1,7 @@
-from collections import defaultdict
 import os
 import socket
-
 import random
-
+from collections import defaultdict
 from urlo.domain import get_sub_domain
 
 

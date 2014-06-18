@@ -1,7 +1,6 @@
 import errno
 import socket
-
-from httpy.connection import is_disconnected
+from . import is_disconnected
 
 
 class SocketError(socket.error):

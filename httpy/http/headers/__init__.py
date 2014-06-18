@@ -1,5 +1,4 @@
 import email.utils as email_utils
-
 from collected.dict.caseless import CaseLessDict
 from dated import utc
 
