@@ -1,4 +1,4 @@
-from dated.normalized import utc
+from dated import utc
 from .headers import HttpHeaders, date_header
 
 

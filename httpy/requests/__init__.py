@@ -1,6 +1,6 @@
 import cookielib
 
-from urlo.parser import params_url, build_url
+from urlo.unquoted import params_url, build_url
 
 from ..http.request import HttpRequest
 from ..http.headers import HttpHeaders

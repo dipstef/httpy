@@ -1,5 +1,6 @@
 import re
-from urlo import unquoted
+from urlo import unquote
+from unicoder import force_unicode
 
 
 def disposition_file_name(headers):
@@ -26,7 +27,7 @@ def _disposition_file_name(disposition_string):
 def _unquote_disposition_file(file_name, encoding='utf-8'):
     quoted = re.match('''('|")(.+)('|");?''', file_name)
     file_name = quoted.group(2) if quoted else file_name
-    file_name = unquoted(file_name, encoding.lower())
+    file_name = unquote(force_unicode(file_name, encoding.lower()))
     return file_name
 
 

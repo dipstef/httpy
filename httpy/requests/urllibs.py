@@ -3,7 +3,8 @@ import socket
 import urllib
 import urllib2
 from unicoder import encoded
-from urlo import quote, unquoted
+from urlo import quote
+from urlo.unicode import unquoted
 from .error import UnknownUrl, HttpClientError, HttpServerError, HttpServerConnectionTimeout, IncompleteRead
 from ..http.error import http_status_error, BadStatusLine
 from ..http.request import HttpRequest

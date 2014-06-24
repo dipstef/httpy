@@ -98,5 +98,5 @@ def headers_raw_to_dict(headers_raw):
 def date_header(headers):
     date_string = headers.get('date')
     if date_string:
-        date = utc.from_timestamp(email_utils.parsedate(date_string))
+        date = utc.from_time_tuple(email_utils.parsedate(date_string))
         return date
