@@ -93,5 +93,5 @@ Parsing content disposition
 
 Details
 =======
-``httpy`` relies to ``urllib2`` for request dispatching, however it should soon be ported to ``urllib3``
+``httpy`` uses ``urllib2`` for request dispatching, however it should soon be ported to ``urllib3``
 or ``requests``.
