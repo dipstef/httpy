@@ -1,7 +1,7 @@
 Httpy
 =====
 
-``requests`` like http client interface.
+``requests`` like http-client.
 It is based on python ``urllib2`` however this ideally should be a wrapper of ``requests``.
 
 Features
@@ -55,8 +55,7 @@ Error classes for common http errors and status codes
         assert e.code == 404
 
     >>> httpy.get('http://www.google.ita', timeout=10)
-
-    HttpServerUnresolvableHost("[Errno GET: http://www.google.ita]")
+        HttpServerUnresolvableHost("[Errno GET: http://www.google.ita]")
 
 
 Connection control, checks you are connected to the internet when an host is unresolvable.
@@ -66,18 +65,20 @@ Connection control, checks you are connected to the internet when an host is unr
     #Assuming you are disconnected
 
     >>> httpy.get('http://www.google.com', timeout=10)
-    NotConnected("[Errno GET: http://www.google.com]")
+        NotConnected("[Errno GET: http://www.google.com]")
 
 Headers
 =======
 
-parse content disposition
+content disposition parser
 
 .. code-block:: python
 
-    assert u'asd(foo\'s bar).jpg' == parse_file_name("asd(foo\'s bar).jpg")
-    assert u'D MVC 008S.jpg' == parse_file_name('D%2520MVC%2520008S.jpg')
+    from httpy.http.headers.content import parse_disposition
+
+
+    assert u'D MVC 008S.jpg' == parse_disposition('inline; filename="D%2520MVC%2520008S.jpg"')
 
     assert u'foo.jpg' == parse_disposition('''inline; filename="foo.jpg"''')
-    assert u'åöä.zip' == parse_disposition("inline; filename*=UTF-8''%s" % encoded(u'åöä.zip', 'utf-8'))
-    assert 'file.zip' == parse_disposition('attachment; filename="file.zip"')
+    assert u'åöä.zip' == parse_disposition("inline; filename*=UTF-8''åöä.zip")
+    assert u'file.zip' == parse_disposition('attachment; filename="file.zip"')
