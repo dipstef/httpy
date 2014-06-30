@@ -1,21 +1,20 @@
-from .requests import HttpServerRequests as HttpRequests
-from .http.response import ResponseStatus
-from .requests.urllibs import UrlLibRequests
-from .requests import HttpRequestDispatch
-
+from ... import ResponseStatus
+from ..requests import HttpRequestDispatch
+from .request import UrlLibRequests
 
 requests = UrlLibRequests()
 
 
-class HttpClient(HttpRequestDispatch):
+class UrllibClient(HttpRequestDispatch):
+
     def __init__(self, requests=requests, default_timeout=5):
-        super(HttpClient, self).__init__(requests)
+        super(UrllibClient, self).__init__(requests)
         self._timeout_default = default_timeout
 
-    def _execute(self, request, **kwargs):
+    def execute(self, request, **kwargs):
         timeout = kwargs.pop('timeout', self._timeout_default)
 
-        response = super(HttpClient, self)._execute(request, timeout=timeout, **kwargs)
+        response = super(UrllibClient, self).execute(request, timeout=timeout, **kwargs)
 
         return HttpResponseBody(response.request, response)
 
@@ -45,9 +44,4 @@ class HttpResponseBody(ResponseStatus):
                 'headers': self.headers}
 
 
-http_client = HttpClient()
-
-
-class HttpServerRequests(HttpRequests):
-    def __init__(self, server):
-        super(HttpServerRequests, self).__init__(server, http_client)
+client = UrllibClient()

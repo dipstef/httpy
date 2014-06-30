@@ -32,30 +32,24 @@ class HttpHeaders(CaseLessDict):
         except IndexError:
             return None
 
-    def getlist(self, key, def_val=None):
+    def get_list(self, key, def_val=None):
         try:
             return super(HttpHeaders, self).__getitem__(key)
         except KeyError:
             if def_val is not None:
-                return self.normalize_value(def_val)
+                return self._normalize_value(def_val)
             return []
 
-    def setlist(self, key, list_):
-        self[key] = list_
-
-    def setlistdefault(self, key, default_list=()):
-        return self.setdefault(key, default_list)
-
-    def appendlist(self, key, value):
-        lst = self.getlist(key)
-        lst.extend(self.normalize_value(value))
+    def append(self, key, value):
+        lst = self.get_list(key)
+        lst.extend(self._normalize_value(value))
         self[key] = lst
 
     def items(self):
         return list(self.iteritems())
 
     def iteritems(self):
-        return ((k, self.getlist(k)) for k in self.keys())
+        return ((k, self.get_list(k)) for k in self.keys())
 
     def values(self):
         return [self[k] for k in self.keys()]
@@ -98,5 +92,6 @@ def headers_raw_to_dict(headers_raw):
 def date_header(headers):
     date_string = headers.get('date')
     if date_string:
-        date = utc.from_time_tuple(email_utils.parsedate(date_string))
+        time_tuple = email_utils.parsedate(date_string)
+        date = utc.from_time_tuple(time_tuple).to_datetime()
         return date

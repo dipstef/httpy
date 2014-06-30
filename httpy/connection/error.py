@@ -44,9 +44,9 @@ class ConnectionRefused(ConnectionError):
         super(ConnectionRefused, self).__init__(*args, **kwargs)
 
 
-class NoConnection(SocketError):
+class NotConnected(SocketError):
     def __init__(self, *args, **kwargs):
-        super(NoConnection, self).__init__(*args, **kwargs)
+        super(NotConnected, self).__init__(*args, **kwargs)
 
 
 class ConnectionResetByPeer(ConnectionError):
@@ -71,13 +71,13 @@ class SocketTimeout(ConnectionTimeout):
 
 class UnresolvableOrNotConnected(ConnectionError):
     def __new__(cls, *more):
-        error_class = NoConnection if is_disconnected() else UnresolvableHost
+        error_class = NotConnected if is_disconnected() else UnresolvableHost
 
         return error_class.__new__(error_class, *more)
 
 
 _socket_errors = {
-    errno.ENETUNREACH: NoConnection,
+    errno.ENETUNREACH: NotConnected,
     errno.ETIMEDOUT: SocketTimeout,
     errno.EHOSTUNREACH: NoRouteToHost,
     errno.ECONNREFUSED: ConnectionRefused,

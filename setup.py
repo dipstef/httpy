@@ -37,7 +37,7 @@ settings.update(
     url='https://github.com/dipstef/httpy',
     classifiers=CLASSIFIERS,
     keywords='http client exceptions exception error handling retry retrying headers content connection socket',
-    packages=['httpy', 'httpy.connection', 'httpy.http', 'httpy.http.headers', 'httpy.requests'],
+    packages=['httpy', 'httpy.connection', 'httpy.http', 'httpy.http.headers', 'httpy.client', 'httpy.client.urllib'],
     test_suite='tests',
     requires=['unicoder', 'urlo']
 )

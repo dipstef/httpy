@@ -2,15 +2,24 @@ import httplib
 import socket
 import urllib
 import urllib2
+
 from unicoder import encoded
 from urlo import quote
 from urlo.unicode import unquoted
-from .error import UnknownUrl, HttpClientError, HttpServerError, HttpServerConnectionTimeout, IncompleteRead
-from ..http.error import http_status_error, BadStatusLine
-from ..http.request import HttpRequest
-from ..http.response import ResponseStatus
+
 from ..requests import HttpRequests, cookie_jar
-from ..connection.error import get_error
+from ...connection.error import get_error
+from ...http import HttpRequest, ResponseStatus
+from ...error import HttpClientError, IncompleteRead, UnknownUrl, HttpServerError, HttpServerConnectionTimeout,\
+    http_status_error, BadStatusLine
+
+
+class UrlLibRequests(HttpRequests):
+
+    def execute(self, request, timeout=None, redirect=True, **kwargs):
+        request = UrllibRequest(request, redirect=redirect, timeout=timeout)
+        response = _opener_request(request)
+        return UrlLibResponse(request, response)
 
 
 class UrllibRequest(urllib2.Request, HttpRequest):
@@ -32,14 +41,6 @@ class UrllibRequest(urllib2.Request, HttpRequest):
 
     def __str__(self):
         return encoded(unicode(self))
-
-
-class UrlLibRequests(HttpRequests):
-
-    def _execute(self, request, timeout=None, redirect=True, **kwargs):
-        request = UrllibRequest(request, redirect=redirect, timeout=timeout)
-        response = _opener_request(request)
-        return UrlLibResponse(request, response)
 
 
 class UrlLibResponse(ResponseStatus):

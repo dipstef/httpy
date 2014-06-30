@@ -1,9 +1,6 @@
 import cookielib
-
 from urlo.unquoted import params_url, build_url
-
-from ..http.request import HttpRequest
-from ..http.headers import HttpHeaders
+from ..http import HttpRequest, HttpHeaders
 
 
 cookie_jar = cookielib.LWPCookieJar()
@@ -22,10 +19,10 @@ class HttpRequests(object):
         return self.request('POST', url, params=params, data=data, headers=headers, **kwargs)
 
     def request(self, method, url, params=None, data=None, headers=None, **kwargs):
-        request = HttpRequest(params_url(url, params), method.upper(), self._add_default_headers(headers), data)
-        return self._execute(request, **kwargs)
+        request = HttpRequest(method.upper(), params_url(url, params), self._add_default_headers(headers), data)
+        return self.execute(request, **kwargs)
 
-    def _execute(self, request, **kwargs):
+    def execute(self, request, **kwargs):
         raise NotImplementedError
 
     def __getattr__(self, method):
@@ -48,8 +45,8 @@ class HttpRequestDispatch(HttpRequests):
     def __init__(self, request_handler):
         self._requests = request_handler
 
-    def _execute(self, request, **kwargs):
-        return self._requests._execute(request, **kwargs)
+    def execute(self, request, **kwargs):
+        return self._requests.execute(request, **kwargs)
 
 
 class HttpServerRequests(HttpRequestDispatch):
