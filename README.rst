@@ -1,8 +1,7 @@
 Httpy
 =====
 
-``requests`` like http-client.
-It is based on python ``urllib2`` however this ideally should be a wrapper of ``requests``.
+``requests`` like http client with extensive error reporting.
 
 Features
 ========
@@ -67,10 +66,19 @@ Connection control, checks you are connected to the internet when an host is unr
     >>> httpy.get('http://www.google.com', timeout=10)
         NotConnected("[Errno GET: http://www.google.com]")
 
-Headers
-=======
+Header
+======
 
-content disposition parser
+.. code-block:: python
+
+    from httpy import HttpHeaders
+
+    headers = HttpHeaders()
+
+    headers['user-agent'] = 'httpy'
+    assert headers['User-Agent'] == 'httpy'
+
+Parsing content disposition
 
 .. code-block:: python
 
@@ -81,3 +89,9 @@ content disposition parser
     assert u'foo.jpg' == parse_disposition('''inline; filename="foo.jpg"''')
     assert u'åöä.zip' == parse_disposition("inline; filename*=UTF-8''åöä.zip")
     assert u'file.zip' == parse_disposition('attachment; filename="file.zip"')
+
+
+Details
+=======
+``httpy`` relies to ``urllib2`` for request dispatching, however it should soon be ported to ``urllib3``
+or ``requests``.
