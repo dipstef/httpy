@@ -76,7 +76,6 @@ content disposition parser
 
     from httpy.http.headers.content import parse_disposition
 
-
     assert u'D MVC 008S.jpg' == parse_disposition('inline; filename="D%2520MVC%2520008S.jpg"')
 
     assert u'foo.jpg' == parse_disposition('''inline; filename="foo.jpg"''')
