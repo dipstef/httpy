@@ -1,5 +1,5 @@
 from httplib import responses
-from httpy.connection.error import SocketError, ConnectionTimeout
+from .connection.error import SocketError, ConnectionTimeout
 
 
 class HttpError(Exception):
