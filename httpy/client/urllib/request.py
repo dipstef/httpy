@@ -10,8 +10,8 @@ from urlo.unicode import unquoted
 from ..requests import HttpRequests, cookie_jar
 from ...connection.error import get_error
 from ...http import HttpRequest, ResponseStatus
-from ...error import HttpClientError, IncompleteRead, UnknownUrl, HttpServerError, HttpServerConnectionTimeout,\
-    http_status_error, BadStatusLine
+from ...error import HttpClientError, IncompleteRead, UnknownUrl, HttpServerConnectionTimeout,\
+    http_status_error, BadStatusLine, HttpServerSocketError
 
 
 class UrlLibRequests(HttpRequests):
@@ -150,7 +150,7 @@ def _get_by_error_reason(request, reason):
 
 
 def _socket_error(request, error):
-    return HttpServerError(request, get_error(error))
+    return HttpServerSocketError(request, get_error(error))
 
 
 def _get_by_message(request, error):

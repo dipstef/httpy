@@ -51,9 +51,9 @@ class GatewayTimeoutError(HttpStatusCodeError, HttpOperationTimeout):
 
 
 #server overloaded
-class BadGatewayError(HttpStatusCodeError, HttpOperationTimeout):
+class SiteOverloaded(HttpStatusCodeError, HttpOperationTimeout):
     def __init__(self, request, *args, **kwargs):
-        super(BadGatewayError, self).__init__(request, 502, *args, **kwargs)
+        super(SiteOverloaded, self).__init__(request, 502, *args, **kwargs)
 
 
 class HttpResponseError(HttpError):
@@ -72,7 +72,7 @@ _error_codes = {
     404: HttpNotFound,
     500: InternalServerError,
     501: HttpMethodNotImplemented,
-    502: BadGatewayError,
+    502: SiteOverloaded,
     504: GatewayTimeoutError
 }
 
@@ -87,8 +87,7 @@ def http_status_error(request, response_code, *args):
 
 
 class HttpClientError(HttpError):
-    def __init__(self, request, *args, **kwargs):
-        super(HttpClientError, self).__init__(request, *args, **kwargs)
+    pass
 
 
 class UnknownUrl(HttpClientError):
@@ -97,30 +96,28 @@ class UnknownUrl(HttpClientError):
 
 
 class IncompleteRead(HttpError):
-    def __init__(self, request, *args, **kwargs):
-        super(IncompleteRead, self).__init__(request, *args, **kwargs)
+    pass
 
 
-class HttpServerError(HttpError, SocketError):
+class HttpServerError(HttpError):
     def __init__(self, request, error, *args, **kwargs):
         super(HttpServerError, self).__init__(request, error, *args, **kwargs)
         self._error = error
 
+
+class HttpServerSocketError(HttpServerError):
+    def __init__(self, request, error, *args, **kwargs):
+        super(HttpServerError, self).__init__(request, error, *args, **kwargs)
+
     def __new__(cls, request, error, *more):
         assert isinstance(error, SocketError)
-        subclass = issubclass(cls, HttpServerError) and cls != HttpServerError
+        error_class = type(error.__class__.__name__, (error.__class__, HttpServerSocketError), dict(cls.__dict__))
 
-        cls.__bases__ = (HttpClientError, error.__class__) + error.__class__.__bases__
-
-        if subclass:
-            cls.__bases__ = (HttpServerError, ) + cls.__bases__
-        else:
-            cls.__name__ = error.__class__.__name__
-
-        return super(HttpServerError, cls).__new__(cls, request, error, *more)
+        return super(HttpServerSocketError, cls).__new__(error_class, request, error, *more)
 
 
-class HttpServerConnectionTimeout(HttpServerError):
+class HttpServerConnectionTimeout(ConnectionTimeout, HttpServerError):
 
-    def __new__(cls, request, socket_error, *more):
-        return super(HttpServerConnectionTimeout, cls).__new__(cls, request, ConnectionTimeout(socket_error), *more)
+    def __init__(self, request, socket_error, *more):
+        super(HttpServerConnectionTimeout, self).__init__(socket_error)
+        HttpServerError.__init__(self, request, self, *more)

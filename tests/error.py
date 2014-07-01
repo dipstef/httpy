@@ -2,19 +2,19 @@ import socket
 
 from httpy import HttpRequest
 from httpy.connection.error import UnresolvableHost, ServerError, ConnectionTimeout, ConnectionError
-from httpy.error import HttpServerError, HttpError, HttpServerConnectionTimeout
+from httpy.error import HttpServerError, HttpError, HttpServerConnectionTimeout, HttpServerSocketError
 
 
 def main():
     request = HttpRequest('GET', 'http://test.com')
 
-    connection_error = HttpServerError(request, UnresolvableHost())
+    connection_error = HttpServerSocketError(request, UnresolvableHost())
     assert isinstance(connection_error, HttpError)
     assert isinstance(connection_error, ServerError)
     assert isinstance(connection_error, HttpServerError)
     assert connection_error.request == request
 
-    connection_error = HttpServerError(request, ConnectionTimeout())
+    connection_error = HttpServerSocketError(request, ConnectionTimeout())
     assert isinstance(connection_error, ConnectionTimeout)
     assert isinstance(connection_error, HttpError)
     assert isinstance(connection_error, ConnectionError)
