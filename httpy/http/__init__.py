@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from .headers import HttpHeaders, date_header
 
 
