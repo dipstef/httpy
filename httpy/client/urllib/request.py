@@ -5,7 +5,7 @@ import urllib2
 
 from unicoder import encoded
 from urlo import quote
-from urlo.unicode import unquoted
+from urlo.unicoded import unquoted
 
 from ..requests import HttpRequests, cookie_jar
 from ...connection.error import get_error
