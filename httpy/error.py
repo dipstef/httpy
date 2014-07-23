@@ -106,7 +106,7 @@ class HttpServerError(HttpError):
         self._error = error
 
 
-class HttpServerSocketError(HttpServerError):
+class HttpServerSocketError(HttpServerError, SocketError):
     def __init__(self, request, error, *args, **kwargs):
         super(HttpServerError, self).__init__(request, error, *args, **kwargs)
 
