@@ -64,7 +64,7 @@ class OperationNowInProgress(ServerError):
         super(OperationNowInProgress, self).__init__(*args, **kwargs)
 
 
-class SocketTimeout(ConnectionTimeout):
+class SocketTimeout(ConnectionTimeout, socket.timeout):
     def __init__(self, *args, **kwargs):
         super(SocketTimeout, self).__init__(*args, **kwargs)
 
@@ -76,7 +76,7 @@ class UnresolvableOrNotConnected(ConnectionError):
         return error_class.__new__(error_class, *more)
 
 
-_socket_errors = {
+_by_errno = {
     errno.ENETUNREACH: NotConnected,
     errno.ETIMEDOUT: SocketTimeout,
     errno.EHOSTUNREACH: NoRouteToHost,
@@ -87,9 +87,13 @@ _socket_errors = {
     -2: NameServiceNotKnow
 }
 
+_by_class = {
+    socket.timeout: SocketTimeout
+}
+
 
 def get_error_by_errno(error_number):
-    return _socket_errors.get(error_number)
+    return _by_errno.get(error_number)
 
 
 _error_message = {
@@ -106,7 +110,7 @@ def error_class(socket_error):
     if socket_error.errno == errno.ENOEXEC:
         class_error = get_error_by_strerror(socket_error.strerror)
     else:
-        class_error = get_error_by_errno(socket_error.errno)
+        class_error = _by_class.get(socket_error.__class__) or _by_errno.get(socket_error.errno)
     if not class_error:
         class_error = SocketError
     return class_error

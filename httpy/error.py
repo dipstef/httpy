@@ -1,5 +1,6 @@
 from httplib import responses
-from .connection.error import SocketError, ConnectionTimeout
+import socket
+from .connection.error import SocketError, get_error
 
 
 class HttpError(Exception):
@@ -110,14 +111,9 @@ class HttpServerSocketError(HttpServerError):
         super(HttpServerError, self).__init__(request, error, *args, **kwargs)
 
     def __new__(cls, request, error, *more):
-        assert isinstance(error, SocketError)
-        error_class = type(error.__class__.__name__, (error.__class__, HttpServerSocketError), dict(cls.__dict__))
+        assert isinstance(error, socket.error)
+        if not isinstance(error, SocketError):
+            error = get_error(error)
+        class_error = type(error.__class__.__name__, (error.__class__, cls), dict(cls.__dict__))
 
-        return super(HttpServerSocketError, cls).__new__(error_class, request, error, *more)
-
-
-class HttpServerConnectionTimeout(ConnectionTimeout, HttpServerError):
-
-    def __init__(self, request, socket_error, *more):
-        super(HttpServerConnectionTimeout, self).__init__(socket_error)
-        HttpServerError.__init__(self, request, self, *more)
+        return super(HttpServerSocketError, cls).__new__(class_error, request, error, *more)

@@ -8,10 +8,10 @@ from urlo import quote
 from urlo.unicoded import unquoted
 
 from ..requests import HttpRequests, cookie_jar
-from ...connection.error import get_error
 from ...http import HttpRequest, ResponseStatus
-from ...error import HttpClientError, IncompleteRead, UnknownUrl, HttpServerConnectionTimeout,\
-    http_status_error, BadStatusLine, HttpServerSocketError
+from ...connection.error import ConnectionTimeout
+from ...error import HttpClientError, IncompleteRead, UnknownUrl, HttpServerSocketError, BadStatusLine, \
+    http_status_error
 
 
 class UrlLibRequests(HttpRequests):
@@ -99,8 +99,6 @@ def _urlib_request(urllib_fun):
             raise http_status_error(request, e.code, e)
         except urllib2.URLError, e:
             raise _urllib_url_error(request, e)
-        except socket.timeout, e:
-            raise HttpServerConnectionTimeout(request, e)
         except httplib.BadStatusLine, e:
             raise BadStatusLine(str(request), e)
         except httplib.IncompleteRead, e:
@@ -108,7 +106,7 @@ def _urlib_request(urllib_fun):
         except httplib.HTTPException, e:
             raise HttpClientError(request, e)
         except socket.error, e:
-            raise _socket_error(request, e)
+            raise HttpServerSocketError(request, e)
     return urlib_exec
 
 _opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie_jar), RedirectHandler)
@@ -143,21 +141,17 @@ def _urllib_url_error(request, url_error):
 
 def _get_by_error_reason(request, reason):
     if hasattr(reason, 'errno') and reason.errno:
-        error = _socket_error(request, reason)
+        error = HttpServerSocketError(request, reason)
     else:
         error = _get_by_message(request, reason)
     return error
-
-
-def _socket_error(request, error):
-    return HttpServerSocketError(request, get_error(error))
 
 
 def _get_by_message(request, error):
     if 'unknown url type' in str(error):
         return UnknownUrl(request, error)
     elif error.message == 'timed out':
-        return HttpServerConnectionTimeout(request, error)
+        return HttpServerSocketError(request, ConnectionTimeout(error))
 
 
 class UrllibUrlError(HttpClientError):
