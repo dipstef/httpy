@@ -20,6 +20,7 @@ class HttpRequests(object):
 
     def request(self, method, url, params=None, data=None, headers=None, **kwargs):
         request = HttpRequest(method.upper(), params_url(url, params), self._add_default_headers(headers), data)
+
         return self.execute(request, **kwargs)
 
     def execute(self, request, **kwargs):

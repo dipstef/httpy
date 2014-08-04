@@ -10,8 +10,7 @@ from urlo.unicoded import unquoted
 from ..requests import HttpRequests, cookie_jar
 from ...http import HttpRequest, ResponseStatus
 from ...connection.error import ConnectionTimeout
-from ...error import HttpClientError, IncompleteRead, UnknownUrl, HttpServerSocketError, BadStatusLine, \
-    http_status_error
+from ...error import HttpClientError, IncompleteRead, UnknownUrl, HttpServerSocketError, BadStatusLine, HttpStatusError
 
 
 class UrlLibRequests(HttpRequests):
@@ -96,7 +95,7 @@ def _urlib_request(urllib_fun):
         try:
             return urllib_fun(request, *args, **kwargs)
         except urllib2.HTTPError, e:
-            raise http_status_error(request, e.code, e)
+            raise HttpStatusError(request, e.code, e)
         except urllib2.URLError, e:
             raise _urllib_url_error(request, e)
         except httplib.BadStatusLine, e:

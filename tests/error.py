@@ -2,7 +2,8 @@ import socket
 
 from httpy import HttpRequest
 from httpy.connection.error import UnresolvableHost, ServerError, ConnectionTimeout, ConnectionError, SocketTimeout
-from httpy.error import HttpServerError, HttpError, HttpServerSocketError, HttpyServerError
+from httpy.error import HttpServerError, HttpServerSocketError, HttpyServerError, HttpStatusCodeError, HttpStatusError,\
+    HttpNotFound, HttpError
 
 
 class HttpServerSocketTimeout(HttpServerSocketError):
@@ -14,8 +15,8 @@ class HttpServerSocketTimeout(HttpServerSocketError):
 
 class HttpServerConnectionTimeout(HttpServerError, ConnectionTimeout):
 
-    def __init__(self, request, socket_error):
-        super(HttpServerConnectionTimeout, self).__init__(request, socket_error)
+    def __init__(self, request):
+        super(HttpServerConnectionTimeout, self).__init__(request, socket.timeout())
 
 
 def main():
@@ -58,7 +59,7 @@ def main():
     assert isinstance(connection_error, HttpServerError)
     assert connection_error.request == request
 
-    connection_error = HttpServerConnectionTimeout(request, socket.timeout())
+    connection_error = HttpServerConnectionTimeout(request)
     assert isinstance(connection_error, ConnectionTimeout)
     assert isinstance(connection_error, HttpError)
     assert isinstance(connection_error, ConnectionError)
@@ -79,6 +80,15 @@ def main():
     assert isinstance(connection_error, HttpServerError)
     assert not isinstance(connection_error, HttpServerSocketError)
     assert connection_error.request == request
+
+    error = HttpStatusError(request, 404)
+    assert isinstance(error, HttpStatusCodeError)
+    assert isinstance(error, HttpNotFound)
+
+    try:
+        raise HttpStatusError(request, 404)
+    except HttpNotFound:
+        pass
 
 if __name__ == '__main__':
     main()

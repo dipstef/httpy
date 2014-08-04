@@ -63,23 +63,28 @@ class HttpHeaders(CaseLessDict):
     copy = __copy__
 
 
-def _headers_dict_to_raw(headers_dict):
-    if headers_dict is None:
-        return None
-
+def header_dict_to_lines(headers_dict):
     raw_lines = []
 
     for key, value in headers_dict.items():
         if isinstance(value, (str, unicode)):
-            raw_lines.append("%s: %s" % (key, value))
+            raw_lines.append('%s: %s' % (key, value))
         elif isinstance(value, (list, tuple)):
             for v in value:
-                raw_lines.append("%s: %s" % (key, v))
+                raw_lines.append('%s: %s' % (key, v))
+    return raw_lines
+
+
+def _headers_dict_to_raw(headers_dict):
+    if headers_dict is None:
+        return None
+
+    raw_lines = header_dict_to_lines(headers_dict)
 
     return '\r\n'.join(raw_lines)
 
 
-def headers_raw_to_dict(headers_raw):
+def header_string_to_dict(headers_raw):
     if headers_raw is None:
         return None
 
