@@ -1,3 +1,4 @@
+from abc import abstractmethod
 import cookielib
 from urlo.unquoted import params_url, build_url
 from ..http import HttpRequest, HttpHeaders
@@ -23,6 +24,7 @@ class HttpRequests(object):
 
         return self.execute(request, **kwargs)
 
+    @abstractmethod
     def execute(self, request, **kwargs):
         raise NotImplementedError
 
