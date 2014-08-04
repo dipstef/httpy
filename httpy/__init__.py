@@ -1,6 +1,6 @@
 from .http import *
 from .client import urllib
-from .client.requests import HttpyRequest, HttpServerRequests as ServerRequests
+from .client.requests import HttpServerRequests as ServerRequests
 
 HttpClient = urllib.UrllibClient
 

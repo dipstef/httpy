@@ -1,4 +1,4 @@
-from .requests import user_agent, cookie_jar, HttpRequests
+from .requests import user_agent, cookie_jar, HttpRequests, HttpyRequest
 
 
 class HttpClient(HttpRequests):
