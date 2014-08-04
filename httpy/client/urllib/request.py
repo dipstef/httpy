@@ -15,22 +15,22 @@ from ...error import HttpClientError, IncompleteRead, UnknownUrl, HttpServerSock
 
 class UrlLibRequests(HttpRequests):
 
-    def execute(self, request, timeout=None, redirect=True, **kwargs):
-        request = UrllibRequest(request, redirect=redirect, timeout=timeout)
+    def execute(self, request, **kwargs):
+        request = UrllibRequest(request)
         response = _opener_request(request)
         return UrlLibResponse(request, response)
 
 
 class UrllibRequest(urllib2.Request, HttpRequest):
 
-    def __init__(self, request, redirect=True, timeout=None, *args, **kwargs):
+    def __init__(self, request, *args, **kwargs):
         data = urllib.urlencode(request.data) if request.data else None
         urllib2.Request.__init__(self, quote(request.url), data, request.headers, *args, **kwargs)
 
         self.url = unquoted(request.url)
         self.method = request.method
-        self.redirect = redirect
-        self.timeout = timeout
+        self.redirect = request.redirect
+        self.timeout = request.timeout
 
     def get_method(self):
         return self.method

@@ -1,1 +1,1 @@
-from requests import user_agent, cookie_jar
+from .requests import user_agent, cookie_jar

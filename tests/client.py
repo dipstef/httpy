@@ -12,7 +12,6 @@ def main():
         httpy.get('http://www.google.ita', timeout=10)
     except UnresolvableHost, e:
         assert isinstance(e, HttpError)
-        assert isinstance(e, HttpClientError)
         assert isinstance(e, HttpServerError)
         assert isinstance(e, ServerError)
 
