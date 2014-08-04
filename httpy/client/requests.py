@@ -20,7 +20,7 @@ class HttpRequests(object):
         return self.request('POST', url, params=params, data=data, headers=headers, **kwargs)
 
     def request(self, method, url, params=None, data=None, headers=None, **kwargs):
-        self._request(method.upper(), params_url(url, params), params, data, headers, **kwargs)
+        return self._request(method.upper(), params_url(url, params), params, data, headers, **kwargs)
 
     def _request(self, method, url, params, data, headers, timeout=None, redirect=True, **kwargs):
         request = HttpyRequest(method, url, headers, data, params, timeout, redirect)

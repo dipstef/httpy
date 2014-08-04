@@ -1,6 +1,6 @@
 from httpy import httpy
 from httpy.connection.error import UnresolvableHost, ServerError
-from httpy.error import HttpError, HttpClientError, HttpServerError, HttpNotFound, HttpStatusCodeError
+from httpy.error import HttpError, HttpServerError, HttpNotFound, HttpStatusCodeError
 
 
 def main():
@@ -9,7 +9,7 @@ def main():
     assert response.body
 
     try:
-        httpy.get('http://www.google.ita', timeout=10)
+        httpy.get('http://www.google.ita', timeout=None)
     except UnresolvableHost, e:
         assert isinstance(e, HttpError)
         assert isinstance(e, HttpServerError)
