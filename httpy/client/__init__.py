@@ -1,10 +1,9 @@
-from .requests import user_agent, cookie_jar, HttpRequestDispatch
+from .requests import user_agent, cookie_jar, HttpRequests
 
 
-class HttpClient(HttpRequestDispatch):
+class HttpClient(HttpRequests):
 
-    def __init__(self, request_handler, timeout=5):
-        super(HttpClient, self).__init__(request_handler)
+    def __init__(self, timeout=5):
         self._timeout_default = timeout
 
     def _request(self, method, url, params=None, data=None, headers=None, **kwargs):

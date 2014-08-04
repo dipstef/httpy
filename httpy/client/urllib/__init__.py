@@ -8,10 +8,11 @@ requests = UrlLibRequests()
 class UrllibClient(HttpClient):
 
     def __init__(self, requests=requests, timeout=5):
-        super(UrllibClient, self).__init__(requests, timeout)
+        super(UrllibClient, self).__init__(timeout)
+        self._requests = requests
 
     def execute(self, request, **kwargs):
-        response = super(UrllibClient, self).execute(request, **kwargs)
+        response = self._requests.execute(request, **kwargs)
 
         return HttpResponseBody(response.request, response)
 
