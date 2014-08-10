@@ -20,7 +20,7 @@ class HttpRequests(object):
         return self.request('POST', url, params=params, data=data, headers=headers, **kwargs)
 
     def request(self, method, url, params=None, data=None, headers=None, **kwargs):
-        return self._request(method.upper(), params_url(url, params), params, data, headers, **kwargs)
+        return self._request(method.upper(), url, params, data, headers, **kwargs)
 
     def _request(self, method, url, params, data, headers, timeout=None, redirect=True, **kwargs):
         request = HttpyRequest(method, url, headers, data, params, timeout, redirect)
@@ -69,6 +69,7 @@ class HttpServerRequests(HttpRequestDispatch):
 
 class HttpyRequest(HttpRequest):
     def __init__(self, method, url, headers=None, data=None, params=None, timeout=None, redirect=True):
+        url = url if not params else params_url(url, params)
         super(HttpyRequest, self).__init__(method, url, headers, data, params)
         self.timeout = timeout
         self.redirect = redirect
