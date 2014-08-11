@@ -36,15 +36,6 @@ class HttpRequests(object):
             return self.request(method.upper(), url, headers=headers, **kwargs)
         return request
 
-    @staticmethod
-    def _add_default_headers(headers):
-        default = HttpHeaders(headers_default)
-
-        if headers:
-            default.update(headers)
-
-        return default
-
 
 class HttpRequestDispatch(HttpRequests):
 
@@ -70,6 +61,17 @@ class HttpServerRequests(HttpRequestDispatch):
 class HttpyRequest(HttpRequest):
     def __init__(self, method, url, headers=None, data=None, params=None, timeout=None, redirect=True):
         url = url if not params else params_url(url, params)
+        headers = self._add_default_headers(headers)
+
         super(HttpyRequest, self).__init__(method, url, headers, data, params)
         self.timeout = timeout
         self.redirect = redirect
+
+    @staticmethod
+    def _add_default_headers(headers):
+        default = HttpHeaders(headers_default)
+
+        if headers:
+            default.update(headers)
+
+        return default
