@@ -32,6 +32,9 @@ class HttpRequests(object):
         raise NotImplementedError
 
     def __getattr__(self, method):
+        if method.startswith('_'):
+            raise AttributeError(method)
+
         def request(url, headers=None, **kwargs):
             return self.request(method.upper(), url, headers=headers, **kwargs)
         return request
