@@ -12,7 +12,7 @@ class HttpStatusCodeError(HttpError):
     def __init__(self, request, code, *args, **kwargs):
         super(HttpStatusCodeError, self).__init__(request, code, responses.get(code, ''), *args, **kwargs)
         self.code = code
-        self.message = responses.get(code, '')
+        self.message = '%s, %s' % (responses.get(code, '%s: %d' % (self.__class__.__name__, code)), str(request))
 
 
 class HttpRequestStatusError(HttpStatusCodeError, HttpRequestError):
