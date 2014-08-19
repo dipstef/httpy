@@ -1,4 +1,5 @@
 from datetime import datetime
+from unicoder import encoded
 from .headers import HttpHeaders, date_header
 
 
@@ -12,7 +13,7 @@ class HttpRequest(object):
         self.params = params
 
     def __repr__(self):
-        return '%s: %s' % (self.method, self.url)
+        return '%s: %s' % (self.method, encoded(self.url))
 
 
 class ResponseStatus(object):
@@ -25,7 +26,7 @@ class ResponseStatus(object):
         self.date = date or date_header(self.headers) or datetime.utcnow()
 
     def __repr__(self):
-        return '%s: %s' % (self.url, self.status)
+        return '%s: %s' % (encoded(self.url), self.status)
 
 
 class HttpResponse(ResponseStatus):
