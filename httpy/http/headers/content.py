@@ -35,5 +35,7 @@ def content_length(headers):
     return int(headers.get('content-length', 0))
 
 
+def accepts_ranges(headers):
+    return 'bytes' == headers.get('accept-ranges', '').lower()
 
 
