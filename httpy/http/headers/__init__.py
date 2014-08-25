@@ -1,6 +1,8 @@
 import email.utils as email_utils
+
 from collected.dict.caseless import CaseLessDict
 from dated import utc
+from unicoder import byte_string
 
 
 class HttpHeaders(CaseLessDict):
@@ -10,49 +12,48 @@ class HttpHeaders(CaseLessDict):
         super(HttpHeaders, self).__init__(seq)
 
     def _normalize_key(self, key):
-        if isinstance(key, unicode):
-            return key.title().encode(self.encoding)
-        return key.title()
+        return byte_string(key.title(), encoding=self.encoding)
 
     def _normalize_value(self, value):
-        if not hasattr(value, '__iter__'):
-            value = [value]
+        if hasattr(value, '__iter__'):
+            value = [byte_string(x, encoding=self.encoding) for x in value]
+            value = value[0] if len(value) == 1 else value
+        else:
+            value = byte_string(value)
 
-        return [x.encode(self.encoding) if isinstance(x, unicode) else x for x in value]
+        return value
 
     def __getitem__(self, key):
         try:
-            return super(HttpHeaders, self).__getitem__(key)[-1]
+            value = super(HttpHeaders, self).__getitem__(key)
+            return value if not isinstance(value, list) else value[-1]
         except IndexError:
             return None
 
-    def get(self, key, def_val=None):
+    def get(self, key, default=None):
         try:
-            return super(HttpHeaders, self).get(key, def_val)[-1]
-        except IndexError:
-            return None
+            return self[key]
+        except KeyError:
+            return default
 
     def get_list(self, key, def_val=None):
         try:
             return super(HttpHeaders, self).__getitem__(key)
         except KeyError:
-            if def_val is not None:
-                return self._normalize_value(def_val)
-            return []
+            return self._normalize_value(def_val) if def_val is not None else None
 
     def append(self, key, value):
-        lst = self.get_list(key)
-        lst.extend(self._normalize_value(value))
-        self[key] = lst
-
-    def items(self):
-        return list(self.iteritems())
-
-    def iteritems(self):
-        return ((k, self.get_list(k)) for k in self.keys())
-
-    def values(self):
-        return [self[k] for k in self.keys()]
+        value = self._normalize_value(value)
+        existing = self.get(key)
+        if existing:
+            if not isinstance(existing, list):
+                existing = [existing]
+            if isinstance(value, list):
+                existing.extend(value)
+            else:
+                existing.append(value)
+            value = existing
+        self[key] = value
 
     def to_string(self):
         return _headers_dict_to_raw(self)
@@ -91,7 +92,7 @@ def header_string_to_dict(headers_raw):
     header_split = (header.split(':', 1) for header in headers_raw.splitlines())
     header_items = (header_item for header_item in header_split if len(header_item) == 2)
 
-    return dict([(item[0].strip(), [item[1].strip()]) for item in header_items])
+    return HttpHeaders([(item[0].strip(), [item[1].strip()]) for item in header_items])
 
 
 def date_header(headers):
