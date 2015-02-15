@@ -1,4 +1,4 @@
-from unicoder import encoded
+from unicoder import byte_string
 
 
 class HttpError(Exception):
@@ -8,7 +8,7 @@ class HttpError(Exception):
         self.message = '%s on: %s' % (self.__class__.__name__, str(request))
 
     def __str__(self):
-        return encoded(self.message)
+        return byte_string(self.message)
 
 
 class HttpRequestError(HttpError):
