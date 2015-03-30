@@ -3,7 +3,7 @@ import socket
 import urllib
 import urllib2
 
-from unicoder import encoded
+from unicoder import encoded, byte_string
 from urlo import quote
 from urlo.unicoded import unquoted
 
@@ -24,7 +24,10 @@ class UrlLibRequests(HttpRequests):
 class UrllibRequest(urllib2.Request, HttpRequest):
 
     def __init__(self, request, *args, **kwargs):
-        data = urllib.urlencode(request.data) if request.data else None
+        data = request.data
+        if data:
+            data = {byte_string(key): byte_string(value) for key, value in data.iteritems()}
+            data = urllib.urlencode(data)
         urllib2.Request.__init__(self, quote(request.url), data, request.headers, *args, **kwargs)
 
         self.url = unquoted(request.url)
