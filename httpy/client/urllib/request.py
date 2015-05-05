@@ -1,3 +1,4 @@
+from _ssl import SSLError
 import httplib
 import socket
 import urllib
@@ -10,12 +11,13 @@ from urlo.unicoded import unquoted
 from ..requests import HttpRequests, cookie_jar
 from ...http import HttpRequest, ResponseStatus
 from ...connection.error import ConnectionTimeout
-from ...error import HttpClientError, IncompleteRead, UnknownUrl, HttpServerSocketError, BadStatusLine, HttpStatusError
+from ...error import HttpClientError, IncompleteRead, UnknownUrl, HttpServerSocketError, BadStatusLine, HttpStatusError, \
+    HttpSSLError
 
 
 class UrlLibRequests(HttpRequests):
 
-    def execute(self, request, **kwargs):
+    def execute(self, request, validate=False, **kwargs):
         request = UrllibRequest(request)
         response = _opener_request(request)
         return UrlLibResponse(request, response)
@@ -142,7 +144,9 @@ def _urllib_url_error(request, url_error):
 
 
 def _get_by_error_reason(request, reason):
-    if hasattr(reason, 'errno') and reason.errno:
+    if isinstance(reason, SSLError):
+        error = HttpSSLError(request, reason)
+    elif hasattr(reason, 'errno') and reason.errno:
         error = HttpServerSocketError(request, reason)
     else:
         error = _get_by_message(request, reason)

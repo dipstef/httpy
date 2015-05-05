@@ -3,6 +3,10 @@ from .error import HttpError
 from ..connection.error import SocketError, get_error
 
 
+class HttpSSLError(HttpError):
+    pass
+
+
 class HttpServerError(HttpError):
     pass
 
