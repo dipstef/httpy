@@ -91,6 +91,11 @@ class RedirectHandler(urllib2.HTTPRedirectHandler):
         else:
             return urllib2.HTTPRedirectHandler.http_error_302(self, req, fp, code, msg, headers)
 
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        redirect = urllib2.HTTPRedirectHandler.redirect_request(self, req, fp, code, msg, headers, newurl)
+        redirect.ssl_validate = req.ssl_validate
+        return redirect
+
     http_error_300 = http_error_302
     http_error_301 = http_error_302
     http_error_303 = http_error_302
