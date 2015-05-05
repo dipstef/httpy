@@ -1,8 +1,8 @@
-from _ssl import SSLError
 import httplib
 import socket
 import urllib
 import urllib2
+import ssl
 
 from unicoder import encoded, byte_string
 from urlo import quote
@@ -18,7 +18,7 @@ from ...error import HttpClientError, IncompleteRead, UnknownUrl, HttpServerSock
 class UrlLibRequests(HttpRequests):
 
     def execute(self, request, validate=False, **kwargs):
-        request = UrllibRequest(request)
+        request = UrllibRequest(request, ssl_validate=validate)
         response = _opener_request(request)
         return UrlLibResponse(request, response)
 
@@ -26,6 +26,8 @@ class UrlLibRequests(HttpRequests):
 class UrllibRequest(urllib2.Request, HttpRequest):
 
     def __init__(self, request, *args, **kwargs):
+        self.ssl_validate = kwargs.pop('ssl_validate', False)
+
         data = request.data
         if data:
             data = {byte_string(key): byte_string(value) for key, value in data.iteritems()}
@@ -95,6 +97,16 @@ class RedirectHandler(urllib2.HTTPRedirectHandler):
     http_error_307 = http_error_302
 
 
+class HttpsHandler(urllib2.HTTPSHandler):
+
+    """ From Python 2.7.9 by default the ssl certification is being validated on handshake"""
+    _skip_validate = ssl._create_unverified_context()
+
+    def https_open(self, req):
+        context = None if req.ssl_validate else self._skip_validate
+        return self.do_open(httplib.HTTPSConnection, req, context=context)
+
+
 def _urlib_request(urllib_fun):
     def urlib_exec(request, *args, **kwargs):
         try:
@@ -113,7 +125,7 @@ def _urlib_request(urllib_fun):
             raise HttpServerSocketError(request, e)
     return urlib_exec
 
-_opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie_jar), RedirectHandler)
+_opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie_jar), HttpsHandler, RedirectHandler)
 urllib2.install_opener(_opener)
 
 
@@ -144,7 +156,7 @@ def _urllib_url_error(request, url_error):
 
 
 def _get_by_error_reason(request, reason):
-    if isinstance(reason, SSLError):
+    if isinstance(reason, ssl.SSLError):
         error = HttpSSLError(request, reason)
     elif hasattr(reason, 'errno') and reason.errno:
         error = HttpServerSocketError(request, reason)
